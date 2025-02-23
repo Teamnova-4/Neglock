@@ -6,8 +6,8 @@ export class Block {
         this.type = type;
         this.position = { x, y };
 
-        this.timer = 5;  // 초기 타이머 값
-        this.initTimer = 5;  // 초기 타이머 값
+        this.timer = 6;  // 초기 타이머 값
+        this.initTimer = 6;  // 초기 타이머 값
 
         this.isActive = false;
 
@@ -29,7 +29,7 @@ export class Block {
         
         // 타이머가 0에 도달하면 자동 활성화
         if (this.timer === 0) {
-            this.setActive(false);
+            this.setActive(true);
         }
     }
 
@@ -68,45 +68,42 @@ export class Block {
     // 블록과 상호작용 (충돌 처리)
     interact() {
         this.resetTimer();  // 타이머 리셋
-        this.setActive(true);
+        this.setActive(false);
         this.onInteract();  // 상호작용 시 호출되는 메서드
     }
 
     // 이미지를 캔버스에 그리는 메서드
     draw() {
-
-        const radians = (this.isReverse ? 180 : 0 * Math.PI) / 180; // 도를 라디안으로 변환
+        const radians = (this.isReverse ? 180 : 0) * Math.PI / 180; // 도를 라디안으로 변환
 
         const realPos = {x: this.position.x * GridManager.cellSize, y: this.position.y * GridManager.cellSize};
         const radius = GridManager.cellSize / 2;
-        const time = this.timer / this.initTimer * 2;
+        const time =  (this.initTimer - this.timer) / this.initTimer;
 
         // 캔버스 상태 저장
         ctx.save();
 
 
-        //ctx.filter = "blur(5px)" 
-        ctx.globalAlpha = 0.7;
+        ctx.globalAlpha = (time == 1) ? 1 : 0.3;
 
         ctx.drawImage(this.image,
             0, 0, this.image.width, this.image.height,
             realPos.x, realPos.y, GridManager.cellSize, GridManager.cellSize);
-            /*
-        ctx.globalAlpha = 0.3;
-        ctx.fillStyle = "red";
-        ctx.fillRect(realPos.x, realPos.y, GridManager.cellSize, GridManager.cellSize);
-        */
 
 
         ctx.globalAlpha = 1;
         ctx.beginPath();
-        ctx.moveTo(realPos.x + radius, realPos.y + radius); // 중심으로 이동
-        ctx.arc(realPos.x+ radius, realPos.y + radius, radius, Math.PI * 0.0, Math.PI * time); 
+        ctx.moveTo(realPos.x + GridManager.cellSize / 2, realPos.y + GridManager.cellSize / 2); // 중심으로 이동
+        ctx.arc(realPos.x + GridManager.cellSize / 2, realPos.y + GridManager.cellSize / 2, GridManager.cellSize, Math.PI * -0.5, Math.PI * (-0.5 + time * 2)); 
 
         ctx.closePath();
         ctx.clip(); // 해당 영역만 남기고 클리핑
 
+
+        ctx.save();
+        ctx.translate(realPos.x + radius, realPos.y + radius); // 중심으로 이동
         ctx.rotate(radians);
+        ctx.restore();
 
         ctx.drawImage(this.image,
             0, 0, this.image.width, this.image.height,
@@ -118,10 +115,11 @@ export class Block {
         ctx.restore();
     }
 
-    onActivate(){ }
-    onDeactivate(){ 
+    onActivate(){ 
         GridManager.Instance().map.setBlock(this.position.x, this.position.y, null) // 블록 플레이어 상호작용시 호출
+        console.log("onActivate");
     }
+    onDeactivate(){ }
     Update(){} //플레이거 움직때 마다 호출
     Start(){} //블록 생성시 호출
     onInteract(){}

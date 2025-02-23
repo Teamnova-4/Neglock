@@ -53,12 +53,12 @@ export class GridManager{
 
     // 그리드에 있는 모든 블록의 타이머 업데이트 및 상호작용 처리
     update() {
+        this.interactWithNearBlock(Player.Instance().position.x, Player.Instance().position.y);
         this.map.blocks.forEach(block => {
             if (block){
                 block.updateTimer();  // 타이머 갱신
             }
         });
-        this.interactWithNearBlock(Player.Instance().position.x, Player.Instance().position.y);
     }
 
     // 그리드와 블록을 그리는 메서드
