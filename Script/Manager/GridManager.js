@@ -33,7 +33,6 @@ export class GridManager{
 
     setMap(map) {
         this.map = map;
-        console.log(this.map);
         this.map.render();
     }
 
@@ -90,9 +89,10 @@ export class GameMap {
     render() {
         this.blocks = [];
         this.blocksId.forEach((id, index, arr) => {
-            this.blocks[index] = blockGenerate(index % this.width, Math.floor(index / this.width), id);
-            if(this.blocks[index] !== null){
-                this.blocks[index].Start();
+            const block = blockGenerate(index % this.width, Math.floor(index / this.width), id);
+            this.blocks[index] = block; 
+            if(block !== null && block !== undefined){
+                block.Start();
             }
         });
     }
@@ -114,15 +114,19 @@ export class GameMap {
 }
 
 function blockGenerate(x, y, id) {
-    switch (id) {
+    const idList = id.split(' ');
+    switch (id[0]) {
+        case "P":
+            Player.Instance().position = {x: x, y: y};
+            return null;
         case "G":
-            return new GoalBlock(x, y);
-        case "B":
-            return new DisappearBlock(x, y);
-        case "N":
-            return new NormalBlock(x, y);
+            return new GoalBlock(x, y, idList);
+        case "d":
+            return new DisappearBlock(x, y, idList);
+        case "n":
+            return new NormalBlock(x, y, idList);
         case "D":
-            return new DeadBlock(x, y);
+            return new DeadBlock(x, y, idList);
         default:
             return null;
     }

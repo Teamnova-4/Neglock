@@ -12,7 +12,6 @@ export class Block {
 
         this.isCollidable = true;
         this.isTemporary = false;  // 임시 블록인지 여부
-        this.isReverse = false;  // 리버스 블록의 상태 관리용
 
         this.image = new Image();
     }
@@ -20,38 +19,28 @@ export class Block {
     // 타이머 업데이트 (플레이어 이동 시마다 호출)
     updateTimer() {
         if (this.timer < this.activateTime) {
-            this.timer += 1;  // 타이머 감소
+            this.timer += 1;  // 타이머 증가
         }
         
         // 타이머가 0에 도달하면 자동 활성화
         if (this.timer === this.activateTime) {
-            this.setActive(true);
+            this.Activate();
         }
         this.Update();
     }
 
-    setActive(status) {
-        status = this.isReverse ? !status : status;
-
-        if (status) {
-            this.activate();
-        } else {
-            this.deactivate();
-        } 
-    }
-
     // 블록 활성화
-    activate() {
+    Activate() {
         this.isActive = true;
 
         this.onActivate();
         if (this.isTemporary) {
-            this.deactivate();  // 일시 활성화 블록은 바로 비활성화
+            this.Deactivate();  // 일시 활성화 블록은 바로 비활성화
         }
     }
 
     // 블록 비활성화
-    deactivate() {
+    Deactivate() {
         this.isActive = false;
         this.onDeactivate();
     }
@@ -59,14 +48,13 @@ export class Block {
 
     // 블록과 상호작용 (충돌 처리)
     interact() {
-        this.setActive(false);
+        this.Deactivate();
         this.onInteract();  // 상호작용 시 호출되는 메서드
         this.timer = -1;
     }
 
     // 이미지를 캔버스에 그리는 메서드
     draw() {
-        const radians = (this.isReverse ? 180 : 0) * Math.PI / 180; // 도를 라디안으로 변환
 
         const realPos = {x: this.position.x * GridManager.cellSize, y: this.position.y * GridManager.cellSize};
         const radius = GridManager.cellSize / 2;
@@ -96,12 +84,6 @@ export class Block {
 
         ctx.closePath();
         ctx.clip(); // 해당 영역만 남기고 클리핑
-
-
-        ctx.save();
-        ctx.translate(realPos.x + radius, realPos.y + radius); // 중심으로 이동
-        ctx.rotate(radians);
-        ctx.restore();
 
         ctx.drawImage(this.image,
             0, 0, this.image.width, this.image.height,
