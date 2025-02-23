@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>방치된 폭탄을 옮겨라!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>방치된 폭탄을 옮겨라!</h1>
+        <div id="menu">
+            <button id="start-btn">게임 시작</button>
+            <button id="rules-btn">게임 설명</button>
+        </div>
+        <div id="score" class="hidden">점수: <span id="score-value">0</span></div>
+        <div id="board" class="hidden"></div>
+        <button id="reset-btn" class="hidden">리셋</button>
+    </div>
+    <div id="rules-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>게임 규칙</h2>
+            <p id="rules-text"></p>
+            <button id="close-rules">닫기</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
