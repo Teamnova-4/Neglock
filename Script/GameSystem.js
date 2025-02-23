@@ -84,7 +84,6 @@ export class GameLoop {
             event.preventDefault();
         });
         Player.Instance().initInputListener();
-        this.isPlayerUpdate = true;
 
         // 백그라운드 BGM 시작
         /*

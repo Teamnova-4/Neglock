@@ -1,4 +1,4 @@
-import { DeadBlock } from "../Blocks/BlocksFile.js";
+import { DeadBlock, ExchangeBlock, TeleportBlock } from "../Blocks/BlocksFile.js";
 import { NormalBlock, Player, UIManager } from "../index.js";
 import { DisappearBlock, GoalBlock } from "../index.js" ;
 export class GridManager{
@@ -98,11 +98,47 @@ export class GameMap {
     }
 
     setBlock(x, y, block) {
+        console.log("setBlock", x, y, this.width*y+x);
         this.blocks[this.width * y + x] = block;
+        if (block){
+            block.position = { x: x, y: y };
+        }
     }
+
+    exchangeBlock (x1, y1, x2, y2) {
+        const block1 = this.getBlock(x1, y1);
+        const block2 = this.getBlock(x2, y2);
+        this.setBlock(x1, y1, block2);
+        this.setBlock(x2, y2, block1);
+    }
+
+    pushBlock(position, direction){
+        const block = this.getBlock(position.x, position.y);
+        const newPosition = {x: position.x + direction.x, y: position.y + direction.y};
+        let isPushAble = false;
+        if(block){
+            if (this.pushBlock(newPosition, direction)){
+                this.removeBlock(position.x, position.y);
+                this.setBlock(newPosition.x, newPosition.y, block);
+            }
+        }
+
+        if (this.isValidPosition(newPosition.x, newPosition.y)){
+            this.removeBlock(position.x, position.y);
+            this.setBlock(newPosition.x, newPosition.y, block);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    removeBlock (x, y) {
+        this.setBlock(x, y, null);
+    } 
 
     getBlock(x, y) {    
         if (this.blocks !== null && this.isValidPosition(x, y)) { 
+            console.log("getBlock", x, y, this.width*y+x);
             return this.blocks[this.width * y + x];
         }
         return null;
@@ -121,12 +157,16 @@ function blockGenerate(x, y, id) {
             return null;
         case "G":
             return new GoalBlock(x, y, idList);
+        case "D":
+            return new DeadBlock(x, y, idList);
         case "d":
             return new DisappearBlock(x, y, idList);
         case "n":
             return new NormalBlock(x, y, idList);
-        case "D":
-            return new DeadBlock(x, y, idList);
+        case "t":
+            return new TeleportBlock(x, y, idList);
+        case "e":
+            return new ExchangeBlock(x, y, idList);
         default:
             return null;
     }

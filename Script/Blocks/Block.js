@@ -3,7 +3,7 @@ import { GridManager, ctx } from "../index.js";
 export class Block {
     constructor(x, y) {
 
-        this.position = { x, y };
+        this.position = { x: x, y: y };
 
         this.timer = 0;  // 초기 타이머 값
         this.activateTime = -1;  // 초기 타이머 값
@@ -43,6 +43,7 @@ export class Block {
     Deactivate() {
         this.isActive = false;
         this.onDeactivate();
+        this.timer = 0;
     }
 
 
@@ -64,7 +65,7 @@ export class Block {
         ctx.save();
 
 
-        ctx.globalAlpha = (time == 1) ? 1 : 0.3;
+        ctx.globalAlpha = (this.activateTime === 0|| time === 1) ? 1 : 0.3;
 
         ctx.drawImage(this.image,
             0, 0, this.image.width, this.image.height,
