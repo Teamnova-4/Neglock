@@ -1,4 +1,4 @@
-import { GridManager, Player, rcanvas, rctx } from "./index.js";
+import { GameMap, GridManager, Player, rcanvas, rctx } from "./index.js";
 import { canvas, ctx, Util } from "./index.js";
 
 class Loop {
@@ -84,7 +84,6 @@ export class GameLoop {
             event.preventDefault();
         });
         Player.Instance().initInputListener();
-        this.isPlayerUpdate = true;
 
         // 백그라운드 BGM 시작
         /*
@@ -133,8 +132,9 @@ export class GameLoop {
         this.drawRealCanvas();
         //==========================================================
 
-        if (GridManager.Instance().goalBlocks.every(block => { 
-            if (block.isActive === false) {
+        if (GridManager.Instance().goalBlocks.length > 0 &&
+            GridManager.Instance().goalBlocks.every(block => { 
+            if (block.isActive === true) {
                 return true;
             }
             return false;

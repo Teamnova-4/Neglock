@@ -80,12 +80,16 @@ export class Player{
             case "right": newX += 1; break;
         }
 
+        this.moveTo(newX, newY);
+    }
+
+    moveTo(x, y){
         // 이동 가능한지 체크
-        if (this.canMove(newX, newY)) {
-            this.position = { x: newX, y: newY };
+        if (this.canMove(x, y)) {
+            this.position = { x: x, y: y };
             GameLoop.Instance().isPlayerUpdate = true;
             this.checkInteraction();  // 이동 후 블록과 상호작용
-            console.log("Player move to:" + newX + ", " + newY);
+            console.log("Player move to:" + x + ", " + y);
         }
     }
 
@@ -93,11 +97,14 @@ export class Player{
     /** 해당 위치로 이동 가능한지 체크 */
     canMove(x, y) {
         // 화면 밖으로 나가는 경우 불가능
+        console.log(1);
         if (!GridManager.Instance().isValidPosition(x, y)) return false;
         
-        let block = GridManager.Instance().map.getBlock(x, y);
+        console.log(2);
+        const block = GridManager.Instance().map.getBlock(x, y);
         if (!block) return true; // 블록이 없으면 이동 가능
 
+        console.log(block);
         return !block.isCollidable; // 블록이 충돌 가능하면 이동 불가능
     }
 
@@ -107,12 +114,33 @@ export class Player{
         // 캔버스 상태 저장
         ctx.save();
 
+
         ctx.rotate(radians);
 
         ctx.drawImage(this.image,
             0, 0, this.image.width, this.image.height,
             this.position.x * GridManager.cellSize, this.position.y * GridManager.cellSize, GridManager.cellSize, GridManager.cellSize);
 
+
+        // Bloom 효과를 줄 원의 속성
+        const radius = 0.1;
+        const spread = 2;
+        const spreadCount = 20;
+        const intensity = 0.01;
+        const glowColor = "rgba(255, 50, 50, 0.7)";
+
+        // 여러 번 그려서 빛 번짐 효과를 줌
+        for (let i = 0; i < spreadCount; i++) {
+            ctx.beginPath();
+            ctx.arc(
+                this.position.x * GridManager.cellSize + GridManager.cellSize / 2,
+                this.position.y * GridManager.cellSize + GridManager.cellSize / 2,
+                radius + i * spread, 0, Math.PI * 2);
+
+            ctx.fillStyle = glowColor;
+            ctx.globalAlpha = intensity; // 각 레이어를 약간 투명하게
+            ctx.fill();
+        }
 
         // 캔버스 상태 복원
         ctx.restore();
