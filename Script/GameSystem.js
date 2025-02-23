@@ -48,8 +48,6 @@ export class GameLoop {
         this.isPlayerUpdate = false;
 
         GameLoop.playTime = 0;
-
-        GameLoop.instance.start();
     }
 
     /**
@@ -86,6 +84,7 @@ export class GameLoop {
             event.preventDefault();
         });
         Player.Instance().initInputListener();
+        this.isPlayerUpdate = true;
 
         // 백그라운드 BGM 시작
         /*
@@ -124,14 +123,26 @@ export class GameLoop {
             this.backGroundMusic.volume = volume; // BGM 볼륨 설정
         }
 
+        if(this.isPlayerUpdate) {
+            GridManager.Instance().update();
+            Player.Instance().update();
+        }
         GridManager.Instance().draw(); // 그리드 매니저 업데이트
         Player.Instance().draw();
-        if(this.isPlayerUpdate) {
-            Player.Instance().update();
-            GridManager.Instance().update();
-        }
 
         this.drawRealCanvas();
+        //==========================================================
+
+        if (GridManager.Instance().goalBlocks.every(block => { 
+            if (block.isActive === false) {
+                return true;
+            }
+            return false;
+        })) {
+            this.handleWin();
+        }
+
+
         //==========================================================
 
         this.lastFrameTime = currentTime; // 마지막 프레임 시간 업데이트
@@ -148,6 +159,20 @@ export class GameLoop {
         // 게임 화면 렌더링 (예: 그리기 작업)
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         //Background.Instance().animateBackground();
+    }
+
+    /** 승리 처리 */
+    handleWin() {
+        console.log("🎉 게임 클리어!");
+        this.stop();
+        // 추가: UI 업데이트, 다음 레벨로 이동 등
+    }
+
+    /** 패배 처리 */
+    handleLoss() {
+        console.log("💀 게임 오버...");
+        this.stop();
+        // 추가: 재시작, UI 표시 등
     }
 
 }

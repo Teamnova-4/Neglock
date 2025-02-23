@@ -1,5 +1,6 @@
-import { Block, canvas, Player, rcanvas, rctx, UIManager } from "../index.js";
-
+import { DeadBlock } from "../Blocks/BlocksFile.js";
+import { NormalBlock, Player, UIManager } from "../index.js";
+import { DisappearBlock, GoalBlock } from "../index.js" ;
 export class GridManager{
     static instance;
     static cellSize = 15;
@@ -27,27 +28,12 @@ export class GridManager{
     }
     Initialize() {
         this.map = null;
-
-        const map = new Map(10, 10);
-        map.blocksId = [
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-            "N", "B", "B", "B", "B", "B", "B", "B", "B", "B",
-        ]
-
-        this.setMap(map);
+        this.goalBlocks = [];
     }
-
 
     setMap(map) {
         this.map = map;
+        console.log(this.map);
         this.map.render();
     }
 
@@ -86,7 +72,7 @@ export class GridManager{
     }
 }
 
-class Map {
+export class GameMap {
     constructor(width, height) {
         this.width = width;
         this.height = height;
@@ -104,15 +90,11 @@ class Map {
     render() {
         this.blocks = [];
         this.blocksId.forEach((id, index, arr) => {
-            switch (id) {
-                case "B":
-                    this.blocks[index] = new Block(index % this.width, Math.floor(index / this.width), "test");
-                    break; 
-                default:
-                    this.blocks[index] = null;
+            this.blocks[index] = blockGenerate(index % this.width, Math.floor(index / this.width), id);
+            if(this.blocks[index] !== null){
+                this.blocks[index].Start();
             }
         });
-        console.log(this.blocks);
     }
 
     setBlock(x, y, block) {
@@ -128,5 +110,20 @@ class Map {
 
     isValidPosition(x, y) {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
+    }
+}
+
+function blockGenerate(x, y, id) {
+    switch (id) {
+        case "G":
+            return new GoalBlock(x, y);
+        case "B":
+            return new DisappearBlock(x, y);
+        case "N":
+            return new NormalBlock(x, y);
+        case "D":
+            return new DeadBlock(x, y);
+        default:
+            return null;
     }
 }

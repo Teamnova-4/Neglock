@@ -96,7 +96,6 @@ export class Player{
         if (!GridManager.Instance().isValidPosition(x, y)) return false;
         
         let block = GridManager.Instance().map.getBlock(x, y);
-        console.log(block);
         if (!block) return true; // 블록이 없으면 이동 가능
 
         return !block.isCollidable; // 블록이 충돌 가능하면 이동 불가능
@@ -120,8 +119,8 @@ export class Player{
     }
 
     update() { 
-        
         GameLoop.Instance().isPlayerUpdate = false;
+
     }
 
     /** 현재 위치에서 블록과 상호작용 */
@@ -140,15 +139,4 @@ export class Player{
          */
     }
 
-    /** 승리 처리 */
-    handleWin() {
-        console.log("🎉 게임 클리어!");
-        // 추가: UI 업데이트, 다음 레벨로 이동 등
-    }
-
-    /** 패배 처리 */
-    handleLoss() {
-        console.log("💀 게임 오버...");
-        // 추가: 재시작, UI 표시 등
-    }
 }
